@@ -1,0 +1,109 @@
+Microsoft (R) Macro Assembler Version 14.14.26433.0	    09/27/18 17:42:27
+baseconv.asm						     Page 1 - 1
+
+
+				;---------------------------------------------------------
+				; FILE: baseconv.asm
+				; BY: Horne, A.
+				; ORG: CDA 3104, 201808, 80585
+				; DESC: Building a assembly language project that will convent different number bases.
+				;---------------------------------------------------------
+				.386
+				.model flat, stdcall
+				.stack 128
+				ExitProcess PROTO, dwExitCode:DWORD
+
+ 00000000			.code
+ 00000000			main proc
+
+ 00000000  BB 0000000A		mov ebx, 10               ; base
+ 00000005  B9 00000005		mov ecx, 5                ; position 
+ 0000000A  E8 00000007		call basePosVal
+
+
+
+
+				INVOKE ExitProcess, 0     ; exit the program
+ 00000016			main endp
+
+				;---------------------------------------------------------
+ 00000016			basePosVal proc
+				; calculate value of a base for its position in a number
+				; by raising the base to its position (first position is 0)
+				; (can support up to base-16 position-7)
+				; 
+				; params:
+				;	ebx base
+				;	ecx position 
+				; uses:
+				;	edx high-accumulator (not used but will be cleared)
+				; returns:
+				;	eax positional value of base
+				;---------------------------------------------------------
+ 00000016  B8 00000001		mov eax, 1               ; power 0 is 1 
+
+ 0000001B  85 C9		test ecx, ecx            ; if position == zero 
+ 0000001D  74 0C		jz pow_ret               ;	then just return
+
+ 0000001F  8B C3		mov eax, ebx
+
+				; we only need to go through positions 2 and higher
+				; and position is > 0, so subtract 1 so if 
+				; position=2, we will only loop once
+ 00000021  49			dec ecx                  ; power - 1 (skip zero power)
+ 00000022			pow_loop:
+ 00000022  85 C9			test ecx, ecx       ; while (power > 0)
+ 00000024  74 05			jz pow_ret
+ 00000026  F7 E3			mul ebx             ; multiply by base
+ 00000028  49				dec ecx             ; power--
+ 00000029  EB F7			jmp pow_loop        ; loop again 
+
+ 0000002B			pow_ret:
+ 0000002B  C3			ret                      ; result in eax
+
+ 0000002C			basePosVal endp
+
+				end
+Microsoft (R) Macro Assembler Version 14.14.26433.0	    09/27/18 17:42:27
+baseconv.asm						     Symbols 2 - 1
+
+
+
+
+Segments and Groups:
+
+                N a m e                 Size     Length   Align   Combine Class
+
+FLAT . . . . . . . . . . . . . .	GROUP
+STACK  . . . . . . . . . . . . .	32 Bit	 00000080 DWord	  Stack	  'STACK'	 
+_DATA  . . . . . . . . . . . . .	32 Bit	 00000000 DWord	  Public  'DATA'	
+_TEXT  . . . . . . . . . . . . .	32 Bit	 0000002C DWord	  Public  'CODE'	
+
+
+Procedures, parameters, and locals:
+
+                N a m e                 Type     Value    Attr
+
+ExitProcess  . . . . . . . . . .	P Near	 00000000 FLAT	Length= 00000000 External STDCALL
+basePosVal . . . . . . . . . . .	P Near	 00000016 _TEXT	Length= 00000016 Public STDCALL
+  pow_loop . . . . . . . . . . .	L Near	 00000022 _TEXT	
+  pow_ret  . . . . . . . . . . .	L Near	 0000002B _TEXT	
+main . . . . . . . . . . . . . .	P Near	 00000000 _TEXT	Length= 00000016 Public STDCALL
+
+
+Symbols:
+
+                N a m e                 Type     Value    Attr
+
+@CodeSize  . . . . . . . . . . .	Number	 00000000h   
+@DataSize  . . . . . . . . . . .	Number	 00000000h   
+@Interface . . . . . . . . . . .	Number	 00000003h   
+@Model . . . . . . . . . . . . .	Number	 00000007h   
+@code  . . . . . . . . . . . . .	Text   	 _TEXT
+@data  . . . . . . . . . . . . .	Text   	 FLAT
+@fardata?  . . . . . . . . . . .	Text   	 FLAT
+@fardata . . . . . . . . . . . .	Text   	 FLAT
+@stack . . . . . . . . . . . . .	Text   	 FLAT
+
+	   0 Warnings
+	   0 Errors
